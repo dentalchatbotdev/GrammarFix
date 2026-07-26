@@ -60,7 +60,17 @@
         <section aria-label="Upgrade option" class="pro-section" id="pro-section">
             <h2>Unlock Pro</h2>
             <p><strong>GrammarFix Pro</strong> — <strong>$5/month</strong> — removes the character limit, adds style and tone suggestions, and lets you export to PDF.</p>
-            <a href="https://buy.stripe.com/7sY9AUaSs6C222Teula3u00" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-decoration:none;display:inline-block;margin-top:0.5rem;">Upgrade to Pro</a>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+                <a href="https://buy.stripe.com/7sY9AUaSs6C222Teula3u00" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-decoration:none;">Upgrade to Pro</a>
+            </div>
+            <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                <p style="font-size:0.9rem;opacity:0.8;margin-bottom:0.5rem;">Get notified about updates, tips, and Pro discounts:</p>
+                <form id="email-form" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <input type="email" id="email-input" placeholder="your@email.com" required style="flex:1;min-width:180px;padding:0.6rem;font-size:0.9rem;border:2px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);">
+                    <button type="submit" class="btn-primary" style="padding:0.6rem 1.2rem;font-size:0.9rem;">Join</button>
+                </form>
+                <div id="email-status" style="font-size:0.85rem;margin-top:0.4rem;display:none;"></div>
+            </div>
         </section>
     </main>
     <footer role="contentinfo">

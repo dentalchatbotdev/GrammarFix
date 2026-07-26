@@ -91,6 +91,22 @@ textarea:focus {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-secondary:hover { opacity: 0.8; }
+.btn-secondary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 #char-count {
   text-align: right;
   font-size: 0.85rem;
