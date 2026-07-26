@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailStatus = document.getElementById('email-status');
 
     if (emailForm && emailInput && emailStatus) {
-        const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY'; // Replace with real key
+        const WEB3FORMS_KEY = 'eaa64dab-81bc-4e81-85cb-5c3525d5eb52'; // Replace with real key
 
         emailForm.addEventListener('submit', (e) => {
             e.preventDefault();
