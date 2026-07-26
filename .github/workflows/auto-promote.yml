@@ -2,7 +2,7 @@ name: Auto Promote
 
 on:
   schedule:
-    - cron: '0 12 * * 1'  # Every Monday at noon
+    - cron: '0 12 * * *'  # Every day at noon
   workflow_dispatch:
 
 jobs:
@@ -30,15 +30,21 @@ jobs:
           BLUESKY_USER: ${{ secrets.BLUESKY_USER }}
           BLUESKY_PASS: ${{ secrets.BLUESKY_PASS }}
         run: |
-          curl -s -X POST https://bsky.social/xrpc/com.atproto.server.createSession \
+          POSTS=(
+            "Free grammar checker. No signup, no tracking.\nhttps://grammarfix.pages.dev"
+            "Your text stays yours. GrammarFix processes and forgets.\nhttps://grammarfix.pages.dev"
+            "Grammar checker that respects your privacy. No account needed.\nhttps://grammarfix.pages.dev"
+          )
+          TEXT=${POSTS[$((RANDOM % 3))]}
+          SESSION=$(curl -s -X POST https://bsky.social/xrpc/com.atproto.server.createSession \
             -H "Content-Type: application/json" \
-            -d "{\"identifier\":\"$BLUESKY_USER\",\"password\":\"$BLUESKY_PASS\"}" > session.json
-          DID=$(node -e "console.log(JSON.parse(require('fs').readFileSync('session.json','utf8')).did)")
-          TOKEN=$(node -e "console.log(JSON.parse(require('fs').readFileSync('session.json','utf8')).accessJwt)")
+            -d "{\"identifier\":\"$BLUESKY_USER\",\"password\":\"$BLUESKY_PASS\"}")
+          DID=$(echo "$SESSION" | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d).did))")
+          TOKEN=$(echo "$SESSION" | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d).accessJwt))")
           curl -s -X POST https://bsky.social/xrpc/com.atproto.repo.createRecord \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $TOKEN" \
-            -d "{\"repo\":\"$DID\",\"collection\":\"app.bsky.feed.post\",\"record\":{\"text\":\"Free AI grammar checker. No signup, no tracking, no storage.\\nhttps://grammarfix.pages.dev\",\"createdAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}"
+            -d "{\"repo\":\"$DID\",\"collection\":\"app.bsky.feed.post\",\"record\":{\"text\":\"$TEXT\",\"createdAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}"
           echo "Posted to Bluesky"
 
       - name: Post to Mastodon
@@ -46,8 +52,14 @@ jobs:
           MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
           MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
         run: |
+          POSTS=(
+            "Free grammar checker. No signup, no tracking.\nhttps://grammarfix.pages.dev"
+            "Your text stays yours. GrammarFix processes and forgets.\nhttps://grammarfix.pages.dev"
+            "Grammar checker that respects your privacy. No account needed.\nhttps://grammarfix.pages.dev"
+          )
+          TEXT=${POSTS[$((RANDOM % 3))]}
           curl -s -X POST "$MASTODON_INSTANCE/api/v1/statuses" \
             -H "Authorization: Bearer $MASTODON_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"status\":\"Free AI grammar checker. No signup, no tracking, no storage.\\nhttps://grammarfix.pages.dev\"}"
+            -d "{\"status\":\"$TEXT\"}"
           echo "Posted to Mastodon"

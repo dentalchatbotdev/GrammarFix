@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0056b3" rx="40"/><text x="200" y="250" font-size="180" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">GF</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" rx="66" fill="#1a1a2e"/>
+  <text x="200" y="266" font-size="220" font-weight="800" font-family="system-ui, -apple-system, sans-serif" fill="#ffffff" text-anchor="middle">G</text>
+</svg>
