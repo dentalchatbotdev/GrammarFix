@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+# Sitemap: https://grammarfix.pages.dev/sitemap.xml (add after deployment)
