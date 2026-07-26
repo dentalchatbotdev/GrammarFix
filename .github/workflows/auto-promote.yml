@@ -6,19 +6,48 @@ on:
   workflow_dispatch:
 
 jobs:
-  ping-google:
+  promote:
     runs-on: ubuntu-latest
     steps:
-      - run: curl -s "https://www.google.com/ping?sitemap=https://grammarfix.pages.dev/sitemap.xml"
-      - run: echo "Google pinged"
+      - uses: actions/checkout@v4
 
-  health-check:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Ping Google
+        run: curl -s "https://www.google.com/ping?sitemap=https://grammarfix.pages.dev/sitemap.xml"
+
+      - name: Health Check
+        run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://grammarfix.pages.dev/")
-          if [ "$STATUS" != "200" ]; then
-            echo "Site returned $STATUS"
-            exit 1
-          fi
+          if [ "$STATUS" != "200" ]; then exit 1; fi
           echo "Site OK ($STATUS)"
+
+      - name: Post to Bluesky
+        env:
+          BLUESKY_USER: ${{ secrets.BLUESKY_USER }}
+          BLUESKY_PASS: ${{ secrets.BLUESKY_PASS }}
+        run: |
+          curl -s -X POST https://bsky.social/xrpc/com.atproto.server.createSession \
+            -H "Content-Type: application/json" \
+            -d "{\"identifier\":\"$BLUESKY_USER\",\"password\":\"$BLUESKY_PASS\"}" > session.json
+          DID=$(node -e "console.log(JSON.parse(require('fs').readFileSync('session.json','utf8')).did)")
+          TOKEN=$(node -e "console.log(JSON.parse(require('fs').readFileSync('session.json','utf8')).accessJwt)")
+          curl -s -X POST https://bsky.social/xrpc/com.atproto.repo.createRecord \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -d "{\"repo\":\"$DID\",\"collection\":\"app.bsky.feed.post\",\"record\":{\"text\":\"Free AI grammar checker. No signup, no tracking, no storage.\\nhttps://grammarfix.pages.dev\",\"createdAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}"
+          echo "Posted to Bluesky"
+
+      - name: Post to Mastodon
+        env:
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
+        run: |
+          curl -s -X POST "$MASTODON_INSTANCE/api/v1/statuses" \
+            -H "Authorization: Bearer $MASTODON_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"Free AI grammar checker. No signup, no tracking, no storage.\\nhttps://grammarfix.pages.dev\"}"
+          echo "Posted to Mastodon"
