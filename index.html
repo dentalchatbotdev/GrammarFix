@@ -4,17 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrammarFix – Free AI Grammar Checker</title>
-    <meta name="description" content="Fast, private, ADA-compliant AI grammar checker. No sign‑up needed. Your text is never stored.">
+    <meta name="description" content="Fast, private AI grammar checker. No sign-up needed. Your text is never stored.">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1a2e">
+    <meta property="og:title" content="GrammarFix – Free AI Grammar Checker">
+    <meta property="og:description" content="Free AI grammar checker. No signup, no tracking, no storage. Your text is never stored.">
+    <meta property="og:url" content="https://grammarfix.pages.dev">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <link rel="canonical" href="https://grammarfix.pages.dev">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "GrammarFix",
+        "url": "https://grammarfix.pages.dev",
+        "description": "Free AI grammar checker powered by DeepSeek. No signup, no tracking, no storage.",
+        "applicationCategory": "Utility",
+        "operatingSystem": "All"
+    }
+    </script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header role="banner">
         <h1>GrammarFix</h1>
-        <p>Check your grammar instantly – free, private, accessible.</p>
+        <p>Check your grammar instantly – free, private.</p>
     </header>
-    <main role="main">
+    <main role="main" id="main-content" tabindex="-1">
         <section aria-label="Grammar checker input">
             <label for="input-text" class="sr-only">Enter your text</label>
             <textarea id="input-text" rows="8" placeholder="Paste or type your text here (max 2000 characters)..." aria-required="true" maxlength="2100"></textarea>
@@ -34,14 +52,19 @@
             </ol>
             <p>Your text is never stored or shared. Powered by <a href="https://deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek AI</a>.</p>
         </section>
+        <section aria-label="Embed on your site" class="info-section">
+            <h2>Add to Your Site</h2>
+            <p>One line of code adds a grammar checker to any website:</p>
+            <pre style="background:#f5f5f5;padding:0.75rem;border-radius:6px;overflow-x:auto;font-size:0.85rem;"><code>&lt;script src="https://grammarfix.pages.dev/widget.js"&gt;&lt;/script&gt;</code></pre>
+        </section>
         <section aria-label="Upgrade option" class="pro-section" id="pro-section">
             <h2>Unlock Pro</h2>
             <p><strong>GrammarFix Pro</strong> — <strong>$5/month</strong> — removes the character limit, adds style and tone suggestions, and lets you export to PDF.</p>
-            <p>No subscription needed for the free tier. Pro is coming soon. <a href="#" id="pro-waitlist-link">Join the waitlist</a>.</p>
+            <p>No subscription needed for the free tier. Pro is coming soon.</p>
         </section>
     </main>
     <footer role="contentinfo">
-        <p><strong>Privacy:</strong> We do not store, share, or train on your text. Your data is processed in real‑time and immediately discarded. <a href="#privacy">Full privacy notice</a>.</p>
+        <p><strong>Privacy:</strong> We do not store, share, or train on your text. Your data is processed in real-time and immediately discarded. No cookies, no tracking, no accounts.</p>
         <p>Powered by <a href="https://deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek API</a>. &copy; 2026 GrammarFix.</p>
     </footer>
     <script src="app.js"></script>

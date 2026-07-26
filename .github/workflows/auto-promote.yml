@@ -1,0 +1,24 @@
+name: Auto Promote
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday at noon
+  workflow_dispatch:
+
+jobs:
+  ping-google:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -s "https://www.google.com/ping?sitemap=https://grammarfix.pages.dev/sitemap.xml"
+      - run: echo "Google pinged"
+
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://grammarfix.pages.dev/")
+          if [ "$STATUS" != "200" ]; then
+            echo "Site returned $STATUS"
+            exit 1
+          fi
+          echo "Site OK ($STATUS)"

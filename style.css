@@ -137,6 +137,22 @@ textarea:focus {
 .info-section li, .pro-section p {
   margin-bottom: 0.25rem;
 }
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  padding: 0.5rem 1rem;
+  z-index: 100;
+  text-decoration: none;
+  font-weight: bold;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 .sr-only {
   position: absolute;
   width: 1px;

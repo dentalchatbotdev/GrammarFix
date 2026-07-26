@@ -1,27 +1,63 @@
 const MAX_BODY_BYTES = 10000;
+const ALLOWED_ORIGINS = [
+    'https://grammarfix.pages.dev',
+    'http://localhost:3000',
+];
+
+const RATE_WINDOW_MS = 60000;
+const RATE_MAX = 60;
+const rateMap = new Map();
+
+function rateLimit(ip) {
+    const now = Date.now();
+    const entry = rateMap.get(ip) || [];
+    const valid = entry.filter(t => t > now - RATE_WINDOW_MS);
+    if (valid.length >= RATE_MAX) {
+        return true;
+    }
+    valid.push(now);
+    rateMap.set(ip, valid);
+    return false;
+}
+
+function corsHeaders(request) {
+    const origin = request.headers.get('Origin') || '';
+    const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+    return {
+        'Access-Control-Allow-Origin': allowed,
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Vary': 'Origin',
+    };
+}
 
 export async function onRequest(context) {
     const { request, env } = context;
 
     if (request.method === 'OPTIONS') {
-        return new Response(null, {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            }
-        });
+        return new Response(null, { headers: corsHeaders(request) });
     }
 
     if (request.method !== 'POST') {
-        return new Response('Method not allowed', { status: 405 });
+        return new Response('Method not allowed', { status: 405, headers: corsHeaders(request) });
+    }
+
+    const hdrs = corsHeaders(request);
+    hdrs['Content-Type'] = 'application/json';
+
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (rateLimit(ip)) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+            status: 429,
+            headers: hdrs
+        });
     }
 
     const contentType = request.headers.get('Content-Type') || '';
     if (!contentType.includes('application/json')) {
         return new Response(JSON.stringify({ error: 'Content-Type must be application/json' }), {
             status: 415,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
@@ -29,7 +65,7 @@ export async function onRequest(context) {
     if (cl && parseInt(cl) > MAX_BODY_BYTES) {
         return new Response(JSON.stringify({ error: 'Request body too large.' }), {
             status: 413,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
@@ -39,14 +75,14 @@ export async function onRequest(context) {
     } catch {
         return new Response(JSON.stringify({ error: 'Invalid JSON body.' }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
     if (!body.text || typeof body.text !== 'string') {
         return new Response(JSON.stringify({ error: "Missing 'text' field." }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
@@ -54,19 +90,19 @@ export async function onRequest(context) {
     if (trimmed.length === 0) {
         return new Response(JSON.stringify({ error: 'Text cannot be empty.' }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
     if (trimmed.length > 2000) {
         return new Response(JSON.stringify({ error: 'Text exceeds 2000 character limit.' }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
     if (/<[a-z][\s\S]*>/i.test(trimmed)) {
         return new Response(JSON.stringify({ error: 'HTML tags are not allowed.' }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
@@ -74,7 +110,7 @@ export async function onRequest(context) {
     if (!apiKey) {
         return new Response(JSON.stringify({ error: 'API key not configured.' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 
@@ -101,7 +137,7 @@ export async function onRequest(context) {
             console.error('DeepSeek API error:', response.status, errorText);
             return new Response(JSON.stringify({ error: 'API error: ' + response.status }), {
                 status: 502,
-                headers: { 'Content-Type': 'application/json' }
+                headers: hdrs
             });
         }
 
@@ -111,22 +147,19 @@ export async function onRequest(context) {
         if (!corrected) {
             return new Response(JSON.stringify({ error: 'Empty response from AI.' }), {
                 status: 502,
-                headers: { 'Content-Type': 'application/json' }
+                headers: hdrs
             });
         }
 
         return new Response(JSON.stringify({ original: trimmed, corrected }), {
             status: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-            }
+            headers: hdrs
         });
     } catch (e) {
         console.error('GrammarFix Worker error:', e);
         return new Response(JSON.stringify({ error: 'Internal server error.' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: hdrs
         });
     }
 }
