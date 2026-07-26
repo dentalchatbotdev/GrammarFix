@@ -1,7 +1,7 @@
 {
   "name": "grammarfix",
   "version": "1.0.0",
-  "description": "Free AI grammar checker using DeepSeek API",
+  "description": "Free AI grammar checker. No signup, no tracking, no storage.",
   "main": "server.js",
   "type": "module",
   "scripts": {

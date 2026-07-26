@@ -1,6 +1,6 @@
 # GrammarFix
 
-Free AI grammar checker powered by DeepSeek. No signup, no tracking, no storage.
+Free AI grammar checker. No signup, no tracking, no storage.
 
 ## Features
 

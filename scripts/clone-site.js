@@ -99,7 +99,7 @@ edit('lib/grammar.js', (c) => {
 edit('package.json', (c) => {
   return c
     .split('"grammarfix"').join('"' + toolSlug + '"')
-    .split('Free AI grammar checker using DeepSeek API').join(toolDescription);
+    .split('Free AI grammar checker. No signup, no tracking, no storage.').join(toolDescription);
 });
 
 // wrangler.toml

@@ -8,8 +8,7 @@ const CONFIG_PATH = join(__dirname, '..', '.env.promote');
 const SITE_URL = 'https://grammarfix.pages.dev';
 
 const post = `Free AI grammar checker. No signup, no tracking, no storage.
-${SITE_URL}
-Powered by DeepSeek.`;
+${SITE_URL}`;
 
 function loadConfig() {
     if (!existsSync(CONFIG_PATH)) return {};
